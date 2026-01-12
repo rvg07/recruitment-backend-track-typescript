@@ -112,9 +112,9 @@ This is a Dockerized Typescript-based Invoice Management API project. It provide
 - Use existing tools (e.g., tsoa, zod-to-openapi, or fastify-swagger)
 - The document will include the following endpoint groups:
   - **Authentication** (if applicable, e.g., JWT or API keys).
-  - **Users**: Create, read, update, and delete users.
-  - **Tax Profiles**: Create, read, update, and delete tax profiles associated with users.
-  - **Invoices**: Create, read, update, and delete invoices associated with tax profiles.
+  - **Users**: Create, read, update, and delete users (personal info).
+  - **Tax Profiles**: Create, read, update, and delete tax profiles (tax details) associated with users.
+  - **Invoices**: Create, read, update, and delete invoices (with related details) associated with tax profiles.
   - **Pagination and Filters**: Examples to test pagination and filters in responses.
 - Each endpoint should be well documented with clear descriptions of input parameters and response data.
 
