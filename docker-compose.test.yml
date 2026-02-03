@@ -1,0 +1,43 @@
+
+services:
+  db_test:
+    image: mysql:8.4.4
+    environment:
+      NODE_ENV: test
+      MYSQL_ROOT_PASSWORD: root_password
+
+    tmpfs:
+      - /var/lib/mysql
+    
+    ports:
+      - "3308:3306"
+
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot_password"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+
+  tests:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    
+    environment:
+      NODE_ENV: test
+      JWT_SECRET: jwt_secret_test
+      PORT: 3000
+      
+      DB_HOST: db_test
+      DB_PORT: 3306
+      DB_USER: root
+      DB_PASSWORD: root_password
+      MYSQL_DATABASE: invoice_db_test
+      DATABASE_URL: mysql://root:root_password@db_test:3306/invoice_db_test
+
+    depends_on:
+      db_test:
+        condition: service_healthy
+
+    command: sh -c "sleep 5 && npx prisma db push --accept-data-loss && npx vitest run"
