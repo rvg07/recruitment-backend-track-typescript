@@ -8,6 +8,9 @@ export default defineConfig({
     testTimeout: 30000, //30s
     hookTimeout: 30000, //30s
     fileParallelism: false,
-    maxConcurrency: 1
+    maxConcurrency: 1,
+    coverage: {
+      provider: 'v8'
+    },
   },
 });
