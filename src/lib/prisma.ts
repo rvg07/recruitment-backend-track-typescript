@@ -1,33 +1,30 @@
-import 'dotenv/config'
-import { PrismaMariaDb } from '@prisma/adapter-mariadb'
 import {PrismaClient} from '@prisma/client';
-import {logger } from '../utils/logger';
+import {PrismaMariaDb} from '@prisma/adapter-mariadb';
 
-const configAdapter = {
-    host: process.env.DB_HOST || 'db',
-    port: parseInt(process.env.MYSQL_PORT || '3306'),
-    user: process.env.MYSQL_USER || 'root',
-    password: process.env.MYSQL_PASSWORD,
-    database: process.env.MYSQL_DATABASE || 'invoice_db',
-    connectionLimit: 10
+const globalForPrisma = globalThis as unknown as {
+    prisma: PrismaClient | undefined
 }
 
-const adapter = new PrismaMariaDb(configAdapter);
-export const prisma = new PrismaClient(
-{
-    adapter,
-    log: process.env.NODE_ENV === 'development' ? ['query', 'info', 'warn', 'error'] : []
-})
+const createPrismaClient = () => {
+  const adapter = new PrismaMariaDb({
+    host: process.env.DB_HOST || 'db',
+    port: parseInt(process.env.MYSQL_HOST_PORT || '3306'),
+    user: process.env.MYSQL_USER || 'dev_invoice_user',
+    password: process.env.MYSQL_PASSWORD || 'dev_invoice_password!',
+    database: process.env.MYSQL_DATABASE || 'invoice_db',
+    connectionLimit: 10
+  });
 
-prisma.$connect().then(() => {
-        console.log('Prima client is connected to DB');
-        logger.info('Prima client is connected to DB. Environment db: ', { env: process.env.NODE_ENV});
-    })
-    .catch((error) => {
-        logger.error('Prisma client connection failed. ', { error: error.message});
-        console.error('Prisma client connection failed: ', error.message);
-        process.exit(1);
-    })
-    .finally(async () => {
-        await prisma.$disconnect();
-    });
+  return new PrismaClient({
+    adapter,
+    log: process.env.NODE_ENV === 'development' 
+      ? ['query', 'info', 'warn', 'error'] 
+      : ['error'],
+  });
+};
+
+export const prisma = globalForPrisma.prisma ?? createPrismaClient();
+
+if (process.env.NODE_ENV !== 'production') {
+  globalForPrisma.prisma = prisma;
+}
