@@ -15,7 +15,7 @@ services:
       NODE_ENV: production
       JWT_SECRET: ${JWT_SECRET}
     ports:
-      - "${BACKEND_HOST_PORT:-3001}:3001"
+      - "${BACKEND_HOST_PORT:-3000}:3000"
     command: sh -c "npx prisma migrate deploy && node dist/server.js"
 
   db_prod:
