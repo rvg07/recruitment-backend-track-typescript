@@ -20,9 +20,6 @@ COPY --from=builder /app/src/docs ./dist/docs
 COPY prisma.config.ts ./
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
-COPY prisma.config.ts .env ./
-
-RUN npx prisma generate
 RUN chown -R node:node /app
 
 USER node
